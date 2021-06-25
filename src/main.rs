@@ -12,59 +12,91 @@ fn setup(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let texture_handle = asset_server.load("textures/terminalwhite8x8_aa_ro.png");
-    let texture_atlas = TextureAtlas::from_grid(texture_handle, Vec2::new(FONT_WIDTH, FONT_HEIGHT), 16, 16);
+    let texture_atlas =
+        TextureAtlas::from_grid(texture_handle, Vec2::new(FONT_WIDTH, FONT_HEIGHT), 16, 16);
     let texture_atlas_handle = texture_atlases.add(texture_atlas);
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-    commands.spawn_bundle(SpriteSheetBundle {
-        texture_atlas: texture_atlas_handle.clone(),
-        sprite: TextureAtlasSprite {
-            color: Color::WHITE,
-            index: '@' as u32,
-            ..Default::default()
-        },
-        transform: Transform::from_translation(Vec3::new(0.0, FONT_HEIGHT, 0.0)),
-        ..Default::default()
-    }).with_children(|parent| {
-        parent.spawn_bundle(SpriteBundle {
-            material: materials.add(Color::rgb(0.0, 0.0, 0.0).into()),
-            sprite: Sprite::new(Vec2::new(FONT_WIDTH, FONT_HEIGHT)),
-            ..Default::default()
-        });
-    });
-    for i in 0..10 {
-        commands.spawn_bundle(SpriteSheetBundle {
+    commands
+        .spawn_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle.clone(),
             sprite: TextureAtlasSprite {
-                color: Color::RED,
-                index: '0' as u32 + i,
+                color: Color::WHITE,
+                index: '@' as u32,
                 ..Default::default()
             },
-            transform: Transform::from_translation(Vec3::new(i as f32 * FONT_WIDTH, 0.0, 0.0)),
+            transform: Transform::from_translation(Vec3::new(0.0, FONT_HEIGHT, 0.0)),
             ..Default::default()
-        }).with_children(|parent| {
+        })
+        .with_children(|parent| {
             parent.spawn_bundle(SpriteBundle {
-                material: materials.add(Color::rgb_linear(0.0, 0.0, 1.0 / i as f32).into()),
+                material: materials.add(Color::rgb(0.0, 0.0, 0.0).into()),
                 sprite: Sprite::new(Vec2::new(FONT_WIDTH, FONT_HEIGHT)),
                 ..Default::default()
             });
         });
+    for i in 0..10 {
+        commands
+            .spawn_bundle(SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    color: Color::RED,
+                    index: '0' as u32 + i,
+                    ..Default::default()
+                },
+                transform: Transform::from_translation(Vec3::new(i as f32 * FONT_WIDTH, 0.0, 0.0)),
+                ..Default::default()
+            })
+            .with_children(|parent| {
+                parent.spawn_bundle(SpriteBundle {
+                    material: materials.add(Color::rgb_linear(0.0, 0.0, 1.0 / i as f32).into()),
+                    sprite: Sprite::new(Vec2::new(FONT_WIDTH, FONT_HEIGHT)),
+                    ..Default::default()
+                });
+            });
     }
     for i in 0..26 {
+        commands
+            .spawn_bundle(SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    color: Color::WHITE,
+                    index: 'a' as u32 + i,
+                    ..Default::default()
+                },
+                transform: Transform::from_translation(Vec3::new(
+                    i as f32 * FONT_WIDTH,
+                    -FONT_HEIGHT,
+                    0.0,
+                )),
+                ..Default::default()
+            })
+            .with_children(|parent| {
+                parent.spawn_bundle(SpriteBundle {
+                    material: materials.add(Color::rgb_linear(0.0, 1.0 / i as f32, 0.0).into()),
+                    sprite: Sprite::new(Vec2::new(FONT_WIDTH, FONT_HEIGHT)),
+                    ..Default::default()
+                });
+            });
+    }
+    for i in 0..16 * 16 as i32 {
+        println!(
+            "x: {}, y: {}",
+            (i % ARENA_WIDTH as i32 - ARENA_WIDTH as i32 / 2) as f32,
+            (i / ARENA_WIDTH as i32 - ARENA_WIDTH as i32) as f32
+        );
         commands.spawn_bundle(SpriteSheetBundle {
             texture_atlas: texture_atlas_handle.clone(),
             sprite: TextureAtlasSprite {
                 color: Color::WHITE,
-                index: 'a' as u32 + i,
+                index: i as u32,
                 ..Default::default()
             },
-            transform: Transform::from_translation(Vec3::new(i as f32 * FONT_WIDTH, -FONT_HEIGHT, 0.0)),
+            transform: Transform::from_translation(Vec3::new(
+                ((i % ARENA_WIDTH as i32 - ARENA_WIDTH as i32 / 2)) as f32 * FONT_WIDTH,
+                (2.0-(i / ARENA_WIDTH as i32) as f32) * FONT_WIDTH,
+                0.0,
+            )),
             ..Default::default()
-        }).with_children(|parent| {
-            parent.spawn_bundle(SpriteBundle {
-                material: materials.add(Color::rgb_linear(0.0, 1.0 / i as f32, 0.0).into()),
-                sprite: Sprite::new(Vec2::new(FONT_WIDTH, FONT_HEIGHT)),
-                ..Default::default()
-            });
         });
     }
 }
