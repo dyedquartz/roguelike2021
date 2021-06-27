@@ -1,11 +1,9 @@
 use bevy::{prelude::*, utils::HashSet};
 use bevy_tilemap::prelude::*;
 
-use components::GameState;
-
-mod map;
 mod character;
 mod components;
+mod map;
 
 const ARENA_WIDTH: u32 = 80;
 const ARENA_HEIGHT: u32 = 50;
@@ -14,6 +12,11 @@ const FONT_HEIGHT: f32 = 8.0;
 const ATLAS_WIDTH: usize = 16;
 const ATLAS_HEIGHT: usize = 16;
 
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum GameState {
+    PreRun,
+    Running,
+}
 
 pub fn setup(
     mut commands: Commands,
@@ -83,11 +86,11 @@ fn main() {
             resizable: false,
             ..Default::default()
         })
-        .init_resource::<GameState>()
         .add_plugins(DefaultPlugins)
         .add_plugins(TilemapDefaultPlugins)
+        .add_state(GameState::PreRun)
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .add_startup_system(setup.system())
-        .add_system(map::build_map.system())
+        .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
         .run();
 }

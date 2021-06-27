@@ -1,17 +1,14 @@
 use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 
-use crate::components::{GameState, Player, PlayerBundle, Position, Render};
+use crate::components::{Player, PlayerBundle, Position, Render};
+use crate::GameState;
 
 pub fn build_map(
     mut commands: Commands,
-    mut game_state: ResMut<GameState>,
+    mut game_state: ResMut<State<GameState>>,
     mut query: Query<&mut Tilemap>,
 ) {
-    if game_state.map_loaded {
-        return;
-    }
-
     for mut map in query.iter_mut() {
         info!("Loading Map");
 
@@ -43,6 +40,6 @@ pub fn build_map(
 
         map.spawn_chunk((0, 0)).unwrap();
 
-        game_state.map_loaded = true;
+        game_state.set(GameState::Running).unwrap();
     }
 }
