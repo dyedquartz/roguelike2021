@@ -2,11 +2,12 @@ use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 
 use crate::components::{Player, PlayerBundle, Position, Render};
-use crate::GameState;
+use crate::{ARENA_HEIGHT, ARENA_WIDTH, Collisions, GameState};
 
 pub fn build_map(
     mut commands: Commands,
     mut game_state: ResMut<State<GameState>>,
+    mut collisions: ResMut<Collisions>,
     mut query: Query<&mut Tilemap>,
 ) {
     for mut map in query.iter_mut() {
@@ -16,6 +17,67 @@ pub fn build_map(
 
         let mut tiles = Vec::new();
 
+        // Fill with floor
+        for y in 0..ARENA_HEIGHT {
+            for x in 0..ARENA_WIDTH {
+                let y = y - ARENA_HEIGHT / 2;
+                let x = x - ARENA_WIDTH / 2;
+
+                let tile = Tile {
+                    point: (x, y),
+                    sprite_index: '.' as usize,
+                    ..Default::default()
+                };
+
+                tiles.push(tile);
+            }
+        }
+
+        let room_width = 15;
+        let room_height = 15;
+
+        // X-axis Boundries
+        for x in 0..room_width {
+            let x = x - room_width / 2;
+            let tile_a = (x, -room_height / 2);
+            let tile_b = (x, room_height / 2 - 1);
+            tiles.push(Tile {
+                point: tile_a,
+                sprite_index: '#' as usize,
+                ..Default::default()
+            });
+            tiles.push(Tile {
+                point: tile_b,
+                sprite_index: '#' as usize,
+                ..Default::default()
+            });
+            
+            collisions.0.insert(tile_a);
+            collisions.0.insert(tile_b);
+        }
+
+        // Y-axis boundries
+        for y in 0..room_height {
+            let y = y - room_height / 2;
+            let tile_a = (-room_width / 2, y);
+            let tile_b = (room_width / 2 - 1, y);
+            tiles.push(Tile {
+                point: tile_a,
+                sprite_index: '#' as usize,
+                ..Default::default()
+            });
+            tiles.push(Tile {
+                point: tile_b,
+                sprite_index: '#' as usize,
+                ..Default::default()
+            });
+
+            collisions.0.insert(tile_a);
+            collisions.0.insert(tile_b);
+        }
+
+
+        // Spawn Player
         let player_index = '@' as usize;
 
         let player_tile = Tile {

@@ -5,12 +5,14 @@ mod character;
 mod components;
 mod map;
 
-const ARENA_WIDTH: u32 = 80;
-const ARENA_HEIGHT: u32 = 50;
+const ARENA_WIDTH: i32 = 80;
+const ARENA_HEIGHT: i32 = 50;
 const FONT_WIDTH: f32 = 8.0;
 const FONT_HEIGHT: f32 = 8.0;
 const ATLAS_WIDTH: usize = 16;
 const ATLAS_HEIGHT: usize = 16;
+
+pub struct Collisions(HashSet<(i32, i32)>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum GameState {
@@ -34,7 +36,7 @@ pub fn setup(
 
     let tilemap = Tilemap::builder()
         .dimensions(1, 1)
-        .chunk_dimensions(ARENA_WIDTH, ARENA_HEIGHT, 1)
+        .chunk_dimensions(ARENA_WIDTH as u32, ARENA_HEIGHT as u32, 1)
         .texture_dimensions(FONT_WIDTH as u32, FONT_HEIGHT as u32)
         .texture_atlas(texture_atlas_handle.clone())
         // Map layer
@@ -90,6 +92,7 @@ fn main() {
         .add_plugins(TilemapDefaultPlugins)
         .add_state(GameState::PreRun)
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
+        .insert_resource(Collisions(HashSet::default()))
         .add_startup_system(setup.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
         .run();
