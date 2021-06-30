@@ -4,6 +4,7 @@ use bevy_tilemap::prelude::*;
 mod character;
 mod components;
 mod map;
+mod player;
 
 const ARENA_WIDTH: i32 = 80;
 const ARENA_HEIGHT: i32 = 50;
@@ -95,5 +96,6 @@ fn main() {
         .insert_resource(Collisions(HashSet::default()))
         .add_startup_system(setup.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
+        .add_system_set(SystemSet::on_update(GameState::Running).with_system(player::character_movement.system()))
         .run();
 }

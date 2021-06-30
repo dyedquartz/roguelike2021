@@ -33,8 +33,8 @@ pub fn build_map(
             }
         }
 
-        let room_width = 15;
-        let room_height = 15;
+        let room_width = 16;
+        let room_height = 16;
 
         // X-axis Boundries
         for x in 0..room_width {
