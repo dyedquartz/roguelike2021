@@ -26,7 +26,8 @@ pub fn build_map(
                 let tile = Tile {
                     point: (x, y),
                     sprite_index: '.' as usize,
-                    ..Default::default()
+                    sprite_order: 0,
+                    tint: Color::GRAY,
                 };
 
                 tiles.push(tile);
@@ -44,12 +45,14 @@ pub fn build_map(
             tiles.push(Tile {
                 point: tile_a,
                 sprite_index: '#' as usize,
-                ..Default::default()
+                sprite_order: 0,
+                tint: Color::GRAY,
             });
             tiles.push(Tile {
                 point: tile_b,
                 sprite_index: '#' as usize,
-                ..Default::default()
+                sprite_order: 0,
+                tint: Color::GRAY,
             });
             
             collisions.0.insert(tile_a);
@@ -64,12 +67,14 @@ pub fn build_map(
             tiles.push(Tile {
                 point: tile_a,
                 sprite_index: '#' as usize,
-                ..Default::default()
+                sprite_order: 0,
+                tint: Color::GRAY,
             });
             tiles.push(Tile {
                 point: tile_b,
                 sprite_index: '#' as usize,
-                ..Default::default()
+                sprite_order: 0,
+                tint: Color::GRAY,
             });
 
             collisions.0.insert(tile_a);
@@ -84,7 +89,7 @@ pub fn build_map(
             point: (0, 0),
             sprite_order: 2,
             sprite_index: player_index,
-            tint: Color::WHITE,
+            tint: Color::GREEN,
         };
         tiles.push(player_tile);
 
@@ -94,7 +99,7 @@ pub fn build_map(
             render: Render {
                 sprite_index: player_index,
                 sprite_order: 2,
-                tint: Color::WHITE,
+                tint: Color::GREEN,
             },
         });
 

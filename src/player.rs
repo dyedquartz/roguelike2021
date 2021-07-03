@@ -12,13 +12,8 @@ pub fn character_movement(
     mut player_query: Query<(&mut Position, &Render, &Player)>,
 ) {
     for (mut map, mut timer) in map_query.iter_mut() {
-        timer.tick(time.delta());
-        if !timer.finished() {
-            continue;
-        }
-
         for (mut position, render, _player) in player_query.iter_mut() {
-            for key in keyboard_input.get_pressed() {
+            for key in keyboard_input.get_just_pressed() {
                 let previous_position = *position;
 
                 use KeyCode::*;
