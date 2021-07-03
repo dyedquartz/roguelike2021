@@ -5,6 +5,7 @@ mod character;
 mod components;
 mod map;
 mod player;
+mod rect;
 
 const ARENA_WIDTH: i32 = 80;
 const ARENA_HEIGHT: i32 = 50;

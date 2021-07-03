@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 
 use crate::components::{Player, PlayerBundle, Position, Render};
-use crate::{ARENA_HEIGHT, ARENA_WIDTH, Collisions, GameState};
+use crate::{ARENA_HEIGHT, ARENA_WIDTH, Collisions, GameState, rect};
 
 pub fn build_map(
     mut commands: Commands,
@@ -17,7 +17,7 @@ pub fn build_map(
 
         let mut tiles = Vec::new();
 
-        // Fill with floor
+        // Fill with walls
         for y in 0..ARENA_HEIGHT {
             for x in 0..ARENA_WIDTH {
                 let y = y - ARENA_HEIGHT / 2;
@@ -25,7 +25,7 @@ pub fn build_map(
 
                 let tile = Tile {
                     point: (x, y),
-                    sprite_index: '.' as usize,
+                    sprite_index: '#' as usize,
                     sprite_order: 0,
                     tint: Color::GRAY,
                 };
@@ -34,52 +34,8 @@ pub fn build_map(
             }
         }
 
-        let room_width = 16;
-        let room_height = 16;
-
-        // X-axis Boundries
-        for x in 0..room_width {
-            let x = x - room_width / 2;
-            let tile_a = (x, -room_height / 2);
-            let tile_b = (x, room_height / 2 - 1);
-            tiles.push(Tile {
-                point: tile_a,
-                sprite_index: '#' as usize,
-                sprite_order: 0,
-                tint: Color::GRAY,
-            });
-            tiles.push(Tile {
-                point: tile_b,
-                sprite_index: '#' as usize,
-                sprite_order: 0,
-                tint: Color::GRAY,
-            });
-            
-            collisions.0.insert(tile_a);
-            collisions.0.insert(tile_b);
-        }
-
-        // Y-axis boundries
-        for y in 0..room_height {
-            let y = y - room_height / 2;
-            let tile_a = (-room_width / 2, y);
-            let tile_b = (room_width / 2 - 1, y);
-            tiles.push(Tile {
-                point: tile_a,
-                sprite_index: '#' as usize,
-                sprite_order: 0,
-                tint: Color::GRAY,
-            });
-            tiles.push(Tile {
-                point: tile_b,
-                sprite_index: '#' as usize,
-                sprite_order: 0,
-                tint: Color::GRAY,
-            });
-
-            collisions.0.insert(tile_a);
-            collisions.0.insert(tile_b);
-        }
+        // Spawn room
+        add_room(&mut tiles, &mut collisions, rect::Rect::new(-5, -5, 10, 10));
 
 
         // Spawn Player
@@ -108,5 +64,18 @@ pub fn build_map(
         map.spawn_chunk((0, 0)).unwrap();
 
         game_state.set(GameState::Running).unwrap();
+    }
+}
+
+pub fn add_room(tiles: &mut Vec<Tile<(i32, i32)>>, collisions: &mut Collisions, size: rect::Rect) {
+    for x in size.x1..=size.x2 {
+        for y in size.y1..=size.y2 {
+            tiles.push(Tile {
+                point: (x, y),
+                sprite_order: 0,
+                sprite_index: '.' as usize,
+                tint: Color::GRAY,
+            })
+        }
     }
 }
