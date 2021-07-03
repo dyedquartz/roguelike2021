@@ -3,7 +3,7 @@ use bevy_tilemap::prelude::*;
 use rand::prelude::*;
 
 use crate::{ARENA_HEIGHT, ARENA_WIDTH, Collisions, GameState, rect};
-use crate::components::{Player, PlayerBundle, Position, Render};
+use crate::components::{Player, PlayerBundle, Position, Render, Viewshed};
 use rand::rngs::ThreadRng;
 use std::cmp::{min, max};
 
@@ -96,6 +96,11 @@ pub fn build_map(
                 sprite_order: 2,
                 tint: Color::GREEN,
             },
+            viewshed: Viewshed {
+                visible_tiles: Vec::new(),
+                range: 8,
+                dirty: true,
+            }
         });
 
         map_data.rooms = rooms;

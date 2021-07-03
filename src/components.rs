@@ -23,6 +23,7 @@ pub struct PlayerBundle {
     pub player: Player,
     pub position: Position,
     pub render: Render,
+    pub viewshed: Viewshed,
 }
 
 pub struct Viewshed {

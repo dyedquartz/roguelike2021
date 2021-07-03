@@ -9,6 +9,7 @@ mod map_system;
 mod player;
 mod rect;
 mod visibility_system;
+mod shadowcasting;
 
 const ARENA_WIDTH: i32 = 80;
 const ARENA_HEIGHT: i32 = 50;
@@ -105,7 +106,8 @@ fn main() {
             SystemSet::on_update(GameState::Running)
                 .with_system(player::character_movement.system())
                 .with_system(map_system::map_indexing.system())
-                .with_system(map_system::draw_map.system()),
+                .with_system(map_system::draw_map.system())
+                .with_system(visibility_system::visibility.system()),
         )
         .run();
 }
