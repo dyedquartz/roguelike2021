@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy::utils::HashSet;
+use bevy_tilemap::point::Point2;
 
 #[derive(Default, Copy, Clone, PartialEq)]
 pub struct Position {
@@ -23,3 +24,11 @@ pub struct PlayerBundle {
     pub position: Position,
     pub render: Render,
 }
+
+pub struct Viewshed {
+    pub visible_tiles: Vec<Point2>,
+    pub range: i32,
+    pub dirty: bool,
+}
+
+pub struct BlocksTile;

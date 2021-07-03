@@ -1,11 +1,14 @@
 use bevy::{prelude::*, utils::HashSet};
 use bevy_tilemap::prelude::*;
+use map::Map;
 
 mod character;
 mod components;
 mod map;
+mod map_system;
 mod player;
 mod rect;
+mod visibility_system;
 
 const ARENA_WIDTH: i32 = 80;
 const ARENA_HEIGHT: i32 = 50;
@@ -95,8 +98,14 @@ fn main() {
         .add_state(GameState::PreRun)
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .insert_resource(Collisions(HashSet::default()))
+        .insert_resource(Map::default())
         .add_startup_system(setup.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
-        .add_system_set(SystemSet::on_update(GameState::Running).with_system(player::character_movement.system()))
+        .add_system_set(
+            SystemSet::on_update(GameState::Running)
+                .with_system(player::character_movement.system())
+                .with_system(map_system::map_indexing.system())
+                .with_system(map_system::draw_map.system()),
+        )
         .run();
 }
