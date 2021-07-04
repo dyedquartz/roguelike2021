@@ -7,12 +7,13 @@ use crate::{
     components::{Player, Position, Render},
     Collisions, GameState,
 };
+use crate::map::Map;
 
 pub fn character_movement(
     mut game_state: ResMut<State<GameState>>,
     time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
-    collisions: Res<Collisions>,
+    map_data: Res<Map>,
     mut map_query: Query<(&mut Tilemap, &mut Timer)>,
     mut player_query: Query<(&mut Position, &Render, &Player, &mut Viewshed)>,
 ) {
@@ -24,22 +25,22 @@ pub fn character_movement(
                 use KeyCode::*;
                 match key {
                     W => {
-                        if try_move_player(&collisions, &mut position, (0, 1)) {
+                        if try_move_player(&map_data, &mut position, (0, 1)) {
                             viewshed.dirty = true;
                         };
                     }
                     A => {
-                        if try_move_player(&collisions, &mut position, (-1, 0)) {
+                        if try_move_player(&map_data, &mut position, (-1, 0)) {
                             viewshed.dirty = true;
                         };
                     }
                     S => {
-                        if try_move_player(&collisions, &mut position, (0, -1)) {
+                        if try_move_player(&map_data, &mut position, (0, -1)) {
                             viewshed.dirty = true;
                         };
                     }
                     D => {
-                        if try_move_player(&collisions, &mut position, (1, 0)) {
+                        if try_move_player(&map_data, &mut position, (1, 0)) {
                             viewshed.dirty = true;
                         };
                     }
@@ -56,14 +57,15 @@ pub fn character_movement(
 }
 
 pub fn try_move_player(
-    collisions: &Collisions,
+    map_data: &Map,
     position: &mut Position,
     delta_xy: (i32, i32),
 ) -> bool {
-    let new_pos = (position.x + delta_xy.0, position.y + delta_xy.1);
-    if !collisions.0.contains(&new_pos) {
-        position.x = new_pos.0;
-        position.y = new_pos.1;
+    let new_x = position.x + delta_xy.0;
+    let new_y = position.y + delta_xy.1;
+    if !map_data.blocked[map_data.xy_idx(new_x, new_y)] {
+        position.x = new_x;
+        position.y = new_y;
         true
     } else {
         false
