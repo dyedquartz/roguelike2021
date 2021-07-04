@@ -1,4 +1,3 @@
-use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 
 use crate::components::{Position, Render};
@@ -9,7 +8,11 @@ pub fn move_sprite(
     position: Position,
     render: &Render,
 ) {
-    map.clear_tile((previous_position.x, previous_position.y), render.sprite_order).unwrap();
+    map.clear_tile(
+        (previous_position.x, previous_position.y),
+        render.sprite_order,
+    )
+    .unwrap();
 
     let tile = Tile {
         point: (position.x, position.y),
@@ -19,5 +22,4 @@ pub fn move_sprite(
     };
 
     map.insert_tile(tile).unwrap()
-
 }

@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy::utils::HashSet;
 use bevy_tilemap::point::Point2;
 
 #[derive(Default, Copy, Clone, PartialEq)]

@@ -14,14 +14,12 @@ const NONVIS_OCCLUDE: bool = true;
 
 /// You may choose to have include or exclude the end points here,
 /// `<` is more permissive than `<=`.
-fn angle_contained_in(angle: f32, start: f32, end: f32) -> bool
-{
+fn angle_contained_in(angle: f32, start: f32, end: f32) -> bool {
     start < angle && angle < end
 }
 
 /// Decide visibility of the square based on center, near, and far corner visibility
-fn visible_when(center: bool, near: bool, far: bool) -> bool
-{
+fn visible_when(center: bool, near: bool, far: bool) -> bool {
     center && (near || far)
 }
 
@@ -41,7 +39,8 @@ pub struct RPAShadowcasting<F> {
     iter: CircleIter<()>,
 }
 
-impl<F> RPAShadowcasting<F> where
+impl<F> RPAShadowcasting<F>
+where
     F: FnMut(i32, i32) -> bool,
 {
     /// Create a new **RPAShadowcasting**.
@@ -56,7 +55,8 @@ impl<F> RPAShadowcasting<F> where
     }
 }
 
-impl<F> Iterator for RPAShadowcasting<F> where
+impl<F> Iterator for RPAShadowcasting<F>
+where
     F: FnMut(i32, i32) -> bool,
 {
     /// The iterator element represents **(x, y, visible)** in coordinates
@@ -81,8 +81,7 @@ impl<F> Iterator for RPAShadowcasting<F> where
     ///
     /// Compute angles to the square's near, center
     /// and far edge and compare with all previous recorded occlusions.
-    fn next(&mut self) -> Option<(i32, i32, bool)>
-    {
+    fn next(&mut self) -> Option<(i32, i32, bool)> {
         let (a, b, (near, center, far)) = match self.iter.next() {
             None => return None,
             Some(x) => x,
@@ -126,13 +125,15 @@ pub struct RPAPartialShadowcasting<F> {
     iter: CircleIter<f32>,
 }
 
-impl<F> RPAPartialShadowcasting<F> where
+impl<F> RPAPartialShadowcasting<F>
+where
     F: FnMut(i32, i32) -> f32,
 {
     /// Create a new **RPAPartialShadowcasting**.
     ///
     /// The function **obstruct(x, y)** should return a float indicating
     /// the opacity in 0. to 1. of the square at coordinates **x, y**.
+    #[allow(dead_code)]
     pub fn new(radius: i32, obstruct: F) -> Self {
         RPAPartialShadowcasting {
             obstruct: obstruct,
@@ -141,15 +142,15 @@ impl<F> RPAPartialShadowcasting<F> where
     }
 }
 
-impl<F> Iterator for RPAPartialShadowcasting<F> where
+impl<F> Iterator for RPAPartialShadowcasting<F>
+where
     F: FnMut(i32, i32) -> f32,
 {
     /// The iterator element represents **(x, y, opacity)** in coordinates
     /// relative to the center, opacity from 0. to 1. (1. means no visibility).
     type Item = (i32, i32, f32);
 
-    fn next(&mut self) -> Option<(i32, i32, f32)>
-    {
+    fn next(&mut self) -> Option<(i32, i32, f32)> {
         let (a, b, (near, center, far)) = match self.iter.next() {
             None => return None,
             Some(x) => x,
@@ -208,8 +209,7 @@ struct CircleIter<T> {
 /// x, y, (near, center, far).
 type CircleItem = (i32, i32, (f32, f32, f32));
 
-impl<T> CircleIter<T>
-{
+impl<T> CircleIter<T> {
     /// Create a new **CircleIter**.
     pub fn new(radius: i32) -> Self {
         CircleIter {
@@ -221,8 +221,7 @@ impl<T> CircleIter<T>
         }
     }
 
-    fn next_octant(&mut self)
-    {
+    fn next_octant(&mut self) {
         let (ref mut x, ref mut y, ref mut vert) = self.octant;
         *vert = !*vert;
         if !*vert {
@@ -240,12 +239,10 @@ impl<T> CircleIter<T>
     }
 }
 
-impl<T> Iterator for CircleIter<T>
-{
+impl<T> Iterator for CircleIter<T> {
     type Item = CircleItem;
 
-    fn next(&mut self) -> Option<CircleItem>
-    {
+    fn next(&mut self) -> Option<CircleItem> {
         if self.r == 0 {
             self.r += 1;
             return Some((0, 0, (0., 0., 0.)));
@@ -261,7 +258,7 @@ impl<T> Iterator for CircleIter<T>
             self.x = 0;
             self.r = 1;
             self.obstructions.clear();
-            if self.octant == (1,1,true) {
+            if self.octant == (1, 1, true) {
                 // back at the original octant and done.
                 return None;
             } else {
@@ -291,4 +288,3 @@ impl<T> Iterator for CircleIter<T>
         Some((a, b, (near, center, far)))
     }
 }
-

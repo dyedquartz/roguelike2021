@@ -3,7 +3,6 @@ use crate::map::{Map, TileType};
 use crate::shadowcasting::RPAShadowcasting;
 use bevy::prelude::*;
 use bevy_tilemap::point::Point2;
-use bevy_tilemap::prelude::*;
 
 pub fn visibility(
     mut map_data: ResMut<Map>,
@@ -24,9 +23,12 @@ pub fn visibility(
                 }
             }
 
-            viewshed
-                .visible_tiles
-                .retain(|p| p.x >= -map_data.width / 2 && p.x < map_data.width / 2 - 1 && p.y >= -map_data.height / 2 && p.y < map_data.height / 2 - 1);
+            viewshed.visible_tiles.retain(|p| {
+                p.x >= -map_data.width / 2
+                    && p.x < map_data.width / 2 - 1
+                    && p.y >= -map_data.height / 2
+                    && p.y < map_data.height / 2 - 1
+            });
 
             if let Some(_p) = player {
                 for t in map_data.visible_tiles.iter_mut() {

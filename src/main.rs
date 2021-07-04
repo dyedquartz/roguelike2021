@@ -8,8 +8,8 @@ mod map;
 mod map_system;
 mod player;
 mod rect;
-mod visibility_system;
 mod shadowcasting;
+mod visibility_system;
 
 const ARENA_WIDTH: i32 = 80;
 const ARENA_HEIGHT: i32 = 50;

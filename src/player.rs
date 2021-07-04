@@ -2,22 +2,19 @@ use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 
 use crate::components::Viewshed;
+use crate::map::Map;
 use crate::{
     character::move_sprite,
     components::{Player, Position, Render},
-    Collisions, GameState,
 };
-use crate::map::Map;
 
 pub fn character_movement(
-    mut game_state: ResMut<State<GameState>>,
-    time: Res<Time>,
     keyboard_input: Res<Input<KeyCode>>,
     map_data: Res<Map>,
-    mut map_query: Query<(&mut Tilemap, &mut Timer)>,
+    mut map_query: Query<&mut Tilemap>,
     mut player_query: Query<(&mut Position, &Render, &Player, &mut Viewshed)>,
 ) {
-    for (mut map, mut timer) in map_query.iter_mut() {
+    for mut map in map_query.iter_mut() {
         for (mut position, render, _player, mut viewshed) in player_query.iter_mut() {
             for key in keyboard_input.get_just_pressed() {
                 let previous_position = *position;
@@ -56,11 +53,7 @@ pub fn character_movement(
     }
 }
 
-pub fn try_move_player(
-    map_data: &Map,
-    position: &mut Position,
-    delta_xy: (i32, i32),
-) -> bool {
+pub fn try_move_player(map_data: &Map, position: &mut Position, delta_xy: (i32, i32)) -> bool {
     let new_x = position.x + delta_xy.0;
     let new_y = position.y + delta_xy.1;
     if !map_data.blocked[map_data.xy_idx(new_x, new_y)] {

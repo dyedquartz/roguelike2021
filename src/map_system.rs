@@ -1,11 +1,11 @@
+use crate::components::{BlocksTile, Position};
+use crate::map::{Map, TileType};
 use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
-use crate::map::{Map, TileType};
-use crate::components::{Position, BlocksTile};
 
 pub fn map_indexing(
     mut map_data: ResMut<Map>,
-    mut position_query: Query<(Entity, &Position, Option<&BlocksTile>)>
+    position_query: Query<(Entity, &Position, Option<&BlocksTile>)>,
 ) {
     map_data.populate_blocked();
     map_data.clear_content_index();
@@ -20,11 +20,10 @@ pub fn map_indexing(
     }
 }
 
-pub fn draw_map(
-    mut map_data: ResMut<Map>,
-    mut tilemap_query: Query<&mut Tilemap>,
-) {
-    let mut tilemap = tilemap_query.single_mut().expect("There should only be one map");
+pub fn draw_map(map_data: Res<Map>, mut tilemap_query: Query<&mut Tilemap>) {
+    let mut tilemap = tilemap_query
+        .single_mut()
+        .expect("There should only be one map");
 
     for (idx, tile) in map_data.tiles.iter().enumerate() {
         if map_data.revealed_tiles[idx] {
@@ -45,7 +44,9 @@ pub fn draw_map(
                 color = Color::rgb_linear(gray, gray, gray);
             }
 
-            let mut tile = tilemap.get_tile_mut(map_data.idx_xy(idx), 0).expect("Nonexistent Tile");
+            let mut tile = tilemap
+                .get_tile_mut(map_data.idx_xy(idx), 0)
+                .expect("Nonexistent Tile");
 
             tile.index = sprite_idx;
             tile.color = color;

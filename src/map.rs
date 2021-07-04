@@ -2,16 +2,15 @@ use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 use rand::prelude::*;
 
-use crate::{ARENA_HEIGHT, ARENA_WIDTH, Collisions, GameState, rect};
 use crate::components::{Player, PlayerBundle, Position, Render, Viewshed};
-use rand::rngs::ThreadRng;
-use std::cmp::{min, max};
+use crate::{rect, GameState, ARENA_HEIGHT, ARENA_WIDTH};
+use std::cmp::{max, min};
 
 pub fn build_map(
     mut commands: Commands,
     mut game_state: ResMut<State<GameState>>,
     mut map_data: ResMut<Map>,
-    mut query: Query<(&mut Tilemap)>,
+    mut query: Query<&mut Tilemap>,
 ) {
     for mut map in query.iter_mut() {
         info!("Loading Map");
@@ -90,7 +89,10 @@ pub fn build_map(
 
         commands.spawn().insert_bundle(PlayerBundle {
             player: Player,
-            position: Position { x: player_x, y: player_y },
+            position: Position {
+                x: player_x,
+                y: player_y,
+            },
             render: Render {
                 sprite_index: player_index,
                 sprite_order: 2,
@@ -100,7 +102,7 @@ pub fn build_map(
                 visible_tiles: Vec::new(),
                 range: 8,
                 dirty: true,
-            }
+            },
         });
 
         map_data.rooms = rooms;
@@ -113,23 +115,10 @@ pub fn build_map(
     }
 }
 
-pub fn add_room(tiles: &mut Vec<Tile<(i32, i32)>>, size: rect::Rect) {
-    for x in size.x1..=size.x2 {
-        for y in size.y1..=size.y2 {
-            tiles.push(Tile {
-                point: (x, y),
-                sprite_order: 0,
-                sprite_index: '.' as usize,
-                tint: Color::GRAY,
-            })
-        }
-    }
-}
-
 #[derive(PartialEq, Copy, Clone)]
 pub enum TileType {
     Floor,
-    Wall
+    Wall,
 }
 
 pub struct Map {
@@ -153,7 +142,7 @@ impl Default for Map {
             revealed_tiles: vec![false; (ARENA_WIDTH * ARENA_HEIGHT) as usize],
             visible_tiles: vec![false; (ARENA_WIDTH * ARENA_HEIGHT) as usize],
             blocked: vec![false; (ARENA_WIDTH * ARENA_HEIGHT) as usize],
-            tile_content: vec![Vec::new(); (ARENA_WIDTH * ARENA_HEIGHT) as usize]
+            tile_content: vec![Vec::new(); (ARENA_WIDTH * ARENA_HEIGHT) as usize],
         }
     }
 }
