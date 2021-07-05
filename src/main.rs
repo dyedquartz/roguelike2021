@@ -126,9 +126,9 @@ fn main() {
         // )
         .add_system_set(
             SystemSet::on_enter(GameState::PlayerTurn)
-                .with_system(map_system::map_indexing.system())
-                .with_system(map_system::draw_map.system())
-                .with_system(visibility_system::visibility.system()),
+                .with_system(visibility_system::visibility.system().label("visibility"))
+                .with_system(map_system::map_indexing.system().label("index").after("visibility"))
+                .with_system(map_system::draw_map.system().after("index")),
         )
         .run();
 }
