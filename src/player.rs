@@ -18,12 +18,7 @@ pub fn character_movement(
 ) {
     for mut map in map_query.iter_mut() {
         for (mut position, render, _player, mut viewshed) in player_query.iter_mut() {
-            let mut inputs = keyboard_input.get_just_pressed().peekable();
-            if inputs.peek() == None && *gamestate.current() != GameState::AwaitingInput {
-                gamestate.overwrite_set(GameState::AwaitingInput).unwrap();
-                return;
-            }
-            for key in inputs {
+            for key in keyboard_input.get_just_pressed() {
                 let previous_position = *position;
 
                 use KeyCode::*;
@@ -54,6 +49,7 @@ pub fn character_movement(
 
                 if previous_position != *position {
                     move_sprite(&mut map, previous_position, *position, render);
+                    gamestate.set(GameState::PlayerTurn).unwrap();
                 }
             }
 

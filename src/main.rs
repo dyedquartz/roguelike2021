@@ -1,4 +1,8 @@
-use bevy::{diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, prelude::*, utils::HashSet};
+use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    prelude::*,
+    utils::HashSet,
+};
 use bevy_tilemap::prelude::*;
 use map::Map;
 
@@ -9,6 +13,7 @@ mod map_system;
 mod player;
 mod rect;
 mod shadowcasting;
+mod state_manager_system;
 mod visibility_system;
 
 const ARENA_WIDTH: i32 = 80;
@@ -94,6 +99,7 @@ fn main() {
             width: ARENA_WIDTH as f32 * FONT_WIDTH,
             height: ARENA_HEIGHT as f32 * FONT_WIDTH,
             resizable: false,
+            vsync: false,
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
@@ -105,11 +111,21 @@ fn main() {
         .insert_resource(Collisions(HashSet::default()))
         .insert_resource(Map::default())
         .add_startup_system(setup.system())
+        .add_system(state_manager_system::state_manager.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
-        .add_system_set(SystemSet::on_update(GameState::AwaitingInput).with_system(player::character_movement.system()))
         .add_system_set(
-            SystemSet::on_update(GameState::Running)
-                .with_system(player::character_movement.system())
+            SystemSet::on_update(GameState::AwaitingInput)
+                .with_system(player::character_movement.system()),
+        )
+        // .add_system_set(
+        //     SystemSet::on_update(GameState::Running)
+        //         .with_system(player::character_movement.system())
+        //         .with_system(map_system::map_indexing.system())
+        //         .with_system(map_system::draw_map.system())
+        //         .with_system(visibility_system::visibility.system()),
+        // )
+        .add_system_set(
+            SystemSet::on_enter(GameState::PlayerTurn)
                 .with_system(map_system::map_indexing.system())
                 .with_system(map_system::draw_map.system())
                 .with_system(visibility_system::visibility.system()),

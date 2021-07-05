@@ -111,7 +111,7 @@ pub fn build_map(
 
         map.spawn_chunk((0, 0)).unwrap();
 
-        game_state.set(GameState::Running).unwrap();
+        game_state.set(GameState::PlayerTurn).unwrap();
     }
 }
 
