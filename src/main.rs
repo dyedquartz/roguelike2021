@@ -1,4 +1,4 @@
-use bevy::{prelude::*, utils::HashSet};
+use bevy::{diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin}, prelude::*, utils::HashSet};
 use bevy_tilemap::prelude::*;
 use map::Map;
 
@@ -22,7 +22,9 @@ pub struct Collisions(HashSet<(i32, i32)>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum GameState {
+    AwaitingInput,
     PreRun,
+    PlayerTurn,
     Running,
 }
 
@@ -96,12 +98,15 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugins(TilemapDefaultPlugins)
+        .add_plugin(LogDiagnosticsPlugin::default())
+        .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_state(GameState::PreRun)
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
         .insert_resource(Collisions(HashSet::default()))
         .insert_resource(Map::default())
         .add_startup_system(setup.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
+        .add_system_set(SystemSet::on_update(GameState::AwaitingInput).with_system(player::character_movement.system()))
         .add_system_set(
             SystemSet::on_update(GameState::Running)
                 .with_system(player::character_movement.system())

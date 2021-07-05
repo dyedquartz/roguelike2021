@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 
+use crate::GameState;
 use crate::components::Viewshed;
 use crate::map::Map;
 use crate::{
@@ -9,6 +10,7 @@ use crate::{
 };
 
 pub fn character_movement(
+    mut gamestate: ResMut<State<GameState>>,
     keyboard_input: Res<Input<KeyCode>>,
     map_data: Res<Map>,
     mut map_query: Query<&mut Tilemap>,
@@ -16,7 +18,12 @@ pub fn character_movement(
 ) {
     for mut map in map_query.iter_mut() {
         for (mut position, render, _player, mut viewshed) in player_query.iter_mut() {
-            for key in keyboard_input.get_just_pressed() {
+            let mut inputs = keyboard_input.get_just_pressed().peekable();
+            if inputs.peek() == None && *gamestate.current() != GameState::AwaitingInput {
+                gamestate.overwrite_set(GameState::AwaitingInput).unwrap();
+                return;
+            }
+            for key in inputs {
                 let previous_position = *position;
 
                 use KeyCode::*;
@@ -49,8 +56,10 @@ pub fn character_movement(
                     move_sprite(&mut map, previous_position, *position, render);
                 }
             }
+
         }
     }
+
 }
 
 pub fn try_move_player(map_data: &Map, position: &mut Position, delta_xy: (i32, i32)) -> bool {
