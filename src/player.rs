@@ -18,6 +18,7 @@ pub fn character_movement(
     mut map_query: Query<&mut Tilemap>,
     mut player_query: Query<(&mut Position, &Render, &Player, &mut Viewshed)>,
 ) {
+    let mut moved = false;
     for mut map in map_query.iter_mut() {
         for (mut position, render, _player, mut viewshed) in player_query.iter_mut() {
             for key in keyboard_input.get_just_pressed() {
@@ -43,11 +44,15 @@ pub fn character_movement(
 
                 if previous_position != *position {
                     move_sprite(&mut map, previous_position, *position, render);
-                    gamestate.set(GameState::PlayerTurn).unwrap();
+                    viewshed.dirty = true;
+                    moved = true;
                 }
             }
 
         }
+    }
+    if moved == true {
+        gamestate.set(GameState::PlayerTurn).unwrap();
     }
 
 }

@@ -1,7 +1,6 @@
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
-    utils::HashSet,
 };
 use bevy_tilemap::prelude::*;
 use map::Map;
@@ -25,8 +24,6 @@ const FONT_WIDTH: f32 = 8.0;
 const FONT_HEIGHT: f32 = 8.0;
 const ATLAS_WIDTH: usize = 16;
 const ATLAS_HEIGHT: usize = 16;
-
-pub struct Collisions(HashSet<(i32, i32)>);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum GameState {
@@ -115,13 +112,11 @@ fn main() {
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_state(GameState::PreRun)
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
-        .insert_resource(Collisions(HashSet::default()))
         .insert_resource(Map::default())
         .add_startup_system(setup.system())
-        .add_startup_system(ui::setup_ui.system())
         .add_startup_system(config::open_config.system())
         .add_system(state_manager_system::state_manager.system())
-        .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
+        .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()).with_system(ui::setup_ui.system()))
         .add_system_set(
             SystemSet::on_update(GameState::AwaitingInput)
                 .with_system(player::character_movement.system()),
