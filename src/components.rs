@@ -32,3 +32,5 @@ pub struct Viewshed {
 }
 
 pub struct BlocksTile;
+
+pub struct GameLog;

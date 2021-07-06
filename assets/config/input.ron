@@ -3,4 +3,6 @@ InputConfig(
     down: O,
     left: A,
     right: E,
+    pick_up: U,
+    inventory: Period,
 )

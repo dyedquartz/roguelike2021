@@ -7,6 +7,8 @@ pub struct InputConfig {
     pub down: KeyCode,
     pub left: KeyCode,
     pub right: KeyCode,
+    pub pick_up: KeyCode,
+    pub inventory: KeyCode,
 }
 
 pub fn open_config(mut commands: Commands) {

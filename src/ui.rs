@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{config::InputConfig, UI_WIDTH};
+use crate::{UI_WIDTH, components::GameLog, config::InputConfig};
 
 pub fn setup_ui(
     mut commands: Commands,
@@ -8,6 +8,7 @@ pub fn setup_ui(
     asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
+    let font = asset_server.load("fonts/CascadiaCode.ttf");
     commands.spawn_bundle(UiCameraBundle::default());
 
     // Root Node
@@ -49,6 +50,43 @@ pub fn setup_ui(
                             ..Default::default()
                         })
                         .with_children(|parent| {
+                            parent.spawn_bundle(TextBundle {
+                                style: Style {
+                                    position_type: PositionType::Absolute,
+                                    position: Rect {
+                                        top: Val::Px(5.0),
+                                        left: Val::Px(15.0),
+                                        ..Default::default()
+                                    },
+                                    size: Size {
+                                        width: Val::Px(UI_WIDTH - 30.0),
+                                        ..Default::default()
+                                    },
+                                    ..Default::default()
+                                },
+                                text: Text {
+                                    sections: vec![
+                                        TextSection {
+                                            value: "Welcome to my 2021 Roguelike Tutorial-a-long!\n".to_string(),
+                                            style: TextStyle {
+                                                font: font.clone(),
+                                                font_size: 12.0,
+                                                color: Color::WHITE,
+                                            },
+                                        },
+                                        TextSection {
+                                            value: "(With multiple sections!)\n".to_string(),
+                                            style: TextStyle {
+                                                font: font.clone(),
+                                                font_size: 12.0,
+                                                color: Color::WHITE,
+                                            }
+                                        }
+                                    ],
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            }).insert(GameLog);
                             // Bottom hints
                             parent.spawn_bundle(TextBundle {
                                 style: Style {
@@ -62,14 +100,16 @@ pub fn setup_ui(
                                 },
                                 text: Text::with_section(
                                     format!(
-                                        "{:?}{:?}{:?}{:?}: Movement\n: Inventory\n: Pickup",
+                                        "{:?}{:?}{:?}{:?}: Movement\n{:?}: Inventory\n{:?}: Pickup",
                                         input_config.up,
                                         input_config.left,
                                         input_config.down,
-                                        input_config.right
+                                        input_config.right,
+                                        input_config.inventory,
+                                        input_config.pick_up,
                                     ),
                                     TextStyle {
-                                        font: asset_server.load("fonts/CascadiaCode.ttf"),
+                                        font: font.clone(),
                                         font_size: 12.0,
                                         color: Color::WHITE,
                                     },
