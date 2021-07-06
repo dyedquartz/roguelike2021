@@ -3,6 +3,7 @@ use bevy_tilemap::prelude::*;
 
 use crate::GameState;
 use crate::components::Viewshed;
+use crate::config::InputConfig;
 use crate::map::Map;
 use crate::{
     character::move_sprite,
@@ -12,6 +13,7 @@ use crate::{
 pub fn character_movement(
     mut gamestate: ResMut<State<GameState>>,
     keyboard_input: Res<Input<KeyCode>>,
+    input_config: Res<InputConfig>,
     map_data: Res<Map>,
     mut map_query: Query<&mut Tilemap>,
     mut player_query: Query<(&mut Position, &Render, &Player, &mut Viewshed)>,
@@ -21,30 +23,22 @@ pub fn character_movement(
             for key in keyboard_input.get_just_pressed() {
                 let previous_position = *position;
 
-                use KeyCode::*;
-                match key {
-                    W => {
-                        if try_move_player(&map_data, &mut position, (0, 1)) {
-                            viewshed.dirty = true;
-                        };
+                if key == &input_config.up {
+                    if try_move_player(&map_data, &mut position, (0, 1)) {
+                        viewshed.dirty = true;
                     }
-                    A => {
-                        if try_move_player(&map_data, &mut position, (-1, 0)) {
-                            viewshed.dirty = true;
-                        };
+                } else if key == &input_config.left {
+                    if try_move_player(&map_data, &mut position, (-1, 0)) {
+                        viewshed.dirty = true;
                     }
-                    S => {
-                        if try_move_player(&map_data, &mut position, (0, -1)) {
-                            viewshed.dirty = true;
-                        };
+                } else if key == &input_config.down {
+                    if try_move_player(&map_data, &mut position, (0, -1)) {
+                        viewshed.dirty = true;
                     }
-                    D => {
-                        if try_move_player(&map_data, &mut position, (1, 0)) {
-                            viewshed.dirty = true;
-                        };
+                } else if key == &input_config.right {
+                    if try_move_player(&map_data, &mut position, (1, 0)) {
+                        viewshed.dirty = true;
                     }
-
-                    _ => {}
                 }
 
                 if previous_position != *position {

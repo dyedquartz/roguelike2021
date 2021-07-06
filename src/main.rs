@@ -8,6 +8,7 @@ use map::Map;
 
 mod character;
 mod components;
+mod config;
 mod map;
 mod map_system;
 mod player;
@@ -118,6 +119,7 @@ fn main() {
         .insert_resource(Map::default())
         .add_startup_system(setup.system())
         .add_startup_system(ui::setup_ui.system())
+        .add_startup_system(config::open_config.system())
         .add_system(state_manager_system::state_manager.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
         .add_system_set(

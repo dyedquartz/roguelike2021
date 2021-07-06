@@ -1,0 +1,6 @@
+InputConfig(
+    up: Comma,
+    down: O,
+    left: A,
+    right: E,
+)
