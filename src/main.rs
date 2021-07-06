@@ -14,10 +14,12 @@ mod player;
 mod rect;
 mod shadowcasting;
 mod state_manager_system;
+mod ui;
 mod visibility_system;
 
 const ARENA_WIDTH: i32 = 80;
 const ARENA_HEIGHT: i32 = 50;
+const UI_WIDTH: f32 = 200.0;
 const FONT_WIDTH: f32 = 8.0;
 const FONT_HEIGHT: f32 = 8.0;
 const ATLAS_WIDTH: usize = 16;
@@ -85,7 +87,11 @@ pub fn setup(
         transform: Default::default(),
         global_transform: Default::default(),
     };
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+
+    // Spawn Camera
+    let mut camera = OrthographicCameraBundle::new_2d();
+    camera.transform.translation.x = UI_WIDTH / 2.0;
+    commands.spawn_bundle(camera);
     commands
         .spawn()
         .insert_bundle(tilemap_components)
@@ -96,8 +102,8 @@ fn main() {
     App::build()
         .insert_resource(WindowDescriptor {
             title: "Roguelike Tutorial 2021".to_string(),
-            width: ARENA_WIDTH as f32 * FONT_WIDTH,
-            height: ARENA_HEIGHT as f32 * FONT_WIDTH,
+            width: ARENA_WIDTH as f32 * FONT_WIDTH + UI_WIDTH,
+            height: ARENA_HEIGHT as f32 * FONT_HEIGHT,
             resizable: false,
             vsync: false,
             ..Default::default()
@@ -111,6 +117,7 @@ fn main() {
         .insert_resource(Collisions(HashSet::default()))
         .insert_resource(Map::default())
         .add_startup_system(setup.system())
+        .add_startup_system(ui::setup_ui.system())
         .add_system(state_manager_system::state_manager.system())
         .add_system_set(SystemSet::on_enter(GameState::PreRun).with_system(map::build_map.system()))
         .add_system_set(
@@ -127,8 +134,8 @@ fn main() {
         .add_system_set(
             SystemSet::on_enter(GameState::PlayerTurn)
                 .with_system(visibility_system::visibility.system().label("visibility"))
-                .with_system(map_system::map_indexing.system().label("index").after("visibility"))
-                .with_system(map_system::draw_map.system().after("index")),
+                .with_system(map_system::map_indexing.system().after("visibility"))
+                .with_system(map_system::draw_map.system().after("visibility")),
         )
         .run();
 }
