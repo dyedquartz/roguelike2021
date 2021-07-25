@@ -15,6 +15,7 @@ pub fn state_manager(
             state.set(GameState::AwaitingInput).expect("Unable to change state");
             let mut text = query.single_mut().expect("only one gamelog should exist");
 
+            /*
             text.sections.push(TextSection {
                 value: "Test test test, new section!\n".to_string(),
                 style: TextStyle {
@@ -23,6 +24,7 @@ pub fn state_manager(
                     color: Color::WHITE,
                 }
             });
+            */
         }
         GameState::PreRun => {},
         GameState::Running => {},

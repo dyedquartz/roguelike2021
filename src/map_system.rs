@@ -1,4 +1,4 @@
-use crate::components::{BlocksTile, Position};
+use crate::components::{BlocksTile, Position, Render};
 use crate::map::{Map, TileType};
 use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
@@ -20,7 +20,7 @@ pub fn map_indexing(
     }
 }
 
-pub fn draw_map(map_data: Res<Map>, mut tilemap_query: Query<&mut Tilemap>) {
+pub fn draw_map(map_data: Res<Map>, mut tilemap_query: Query<&mut Tilemap>, render_query: Query<(&Position, &Render)>) {
     let mut tilemap = tilemap_query
         .single_mut()
         .expect("There should only be one map");
@@ -52,4 +52,22 @@ pub fn draw_map(map_data: Res<Map>, mut tilemap_query: Query<&mut Tilemap>) {
             tile.color = color;
         }
     }
+
+    let mut tiles = Vec::new();
+    for (position, render) in render_query.iter() {
+        let idx = map_data.xy_idx(position.x, position.y);
+        if map_data.visible_tiles[idx] {
+            if !tilemap.get_tile((position.x, position.y), render.sprite_order).is_some() {
+                tiles.push(Tile {
+                    point: (position.x, position.y),
+                    sprite_order: render.sprite_order,
+                    sprite_index: render.sprite_index,
+                    tint: render.tint,
+                })
+            }
+        } else {
+            tilemap.clear_tile((position.x, position.y), 2).unwrap();
+        }
+    }
+    tilemap.insert_tiles(tiles).unwrap();
 }

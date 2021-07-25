@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_tilemap::prelude::*;
 use rand::prelude::*;
 
-use crate::components::{Player, PlayerBundle, Position, Render, Viewshed};
+use crate::components::{EnemyBundle, Player, PlayerBundle, Position, Render, Viewshed};
 use crate::{rect, GameState, ARENA_HEIGHT, ARENA_WIDTH};
 use std::cmp::{max, min};
 
@@ -73,6 +73,34 @@ pub fn build_map(
 
                 rooms.push(new_room);
             }
+        }
+
+        // Spawn Enemies
+        for room in rooms.iter().skip(1) {
+            let (x,y) = room.center();
+            let enemy_tile = Tile {
+                point: (x, y),
+                sprite_order: 2,
+                sprite_index: 'g' as usize,
+                tint: Color::RED,
+            };
+            tiles.push(enemy_tile);
+            commands.spawn_bundle(EnemyBundle {
+                position: Position {
+                    x,
+                    y,
+                },
+                render: Render {
+                    sprite_index: 'g' as usize,
+                    sprite_order: 2,
+                    tint: Color::RED,
+                },
+                viewshed: Viewshed {
+                    visible_tiles: Vec::new(),
+                    range: 8,
+                    dirty: true
+                }
+            });
         }
 
         // Spawn Player

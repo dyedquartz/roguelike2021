@@ -25,6 +25,13 @@ pub struct PlayerBundle {
     pub viewshed: Viewshed,
 }
 
+#[derive(Bundle)]
+pub struct EnemyBundle {
+    pub position: Position,
+    pub render: Render,
+    pub viewshed: Viewshed,
+}
+
 pub struct Viewshed {
     pub visible_tiles: Vec<Point2>,
     pub range: i32,
